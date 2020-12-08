@@ -16,6 +16,7 @@
 #include <ros/ros.h>
 #include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>
+#include <sensor_msgs/CompressedImage.h>
 
 #include <kimera-vio/dataprovider/DataProviderInterface.h>
 #include <kimera-vio/pipeline/Pipeline-definitions.h>
@@ -44,6 +45,8 @@ class RosDataProviderInterface : public DataProviderInterface {
 
  protected:
   const cv::Mat readRosImage(const sensor_msgs::ImageConstPtr& img_msg) const;
+
+  const cv::Mat readRosCompressedImage(const sensor_msgs::CompressedImageConstPtr& img_msg) const;
 
   const cv::Mat readRosDepthImage(
       const sensor_msgs::ImageConstPtr& img_msg) const;

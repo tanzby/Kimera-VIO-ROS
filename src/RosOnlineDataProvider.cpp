@@ -14,6 +14,7 @@
 
 #include <geometry_msgs/PoseStamped.h>
 #include <sensor_msgs/image_encodings.h>
+#include <sensor_msgs/CompressedImage.h>
 #include <std_msgs/Bool.h>
 #include <tf2_ros/static_transform_broadcaster.h>
 
@@ -30,6 +31,7 @@ RosOnlineDataProvider::RosOnlineDataProvider(const VioParams& vio_params)
       left_cam_info_subscriber_(),
       right_cam_info_subscriber_(),
       sync_img_(),
+      sync_cimg_(),
       sync_cam_info_(),
       imu_subscriber_(),
       gt_odom_subscriber_(),
@@ -156,20 +158,39 @@ RosOnlineDataProvider::RosOnlineDataProvider(const VioParams& vio_params)
   // We set the queue to only 1, since we prefer to drop messages to reach
   // real-time than to be delayed...
   static constexpr size_t kMaxImagesQueueSize = 1u;
-  it_ = VIO::make_unique<image_transport::ImageTransport>(nh_);
-  left_img_subscriber_.subscribe(
-      *it_, "left_cam/image_raw", kMaxImagesQueueSize);
-  right_img_subscriber_.subscribe(
-      *it_, "right_cam/image_raw", kMaxImagesQueueSize);
   static constexpr size_t kMaxImageSynchronizerQueueSize = 10u;
-  sync_img_ = VIO::make_unique<message_filters::Synchronizer<sync_pol_img>>(
-      sync_pol_img(kMaxImageSynchronizerQueueSize),
-      left_img_subscriber_,
-      right_img_subscriber_);
+  //! CompressImage or normal Image, normal one by default
+  nh_private_.param("is_compress_image", is_compress_image_, is_compress_image_);
+  if (!is_compress_image_) {
+    it_ = VIO::make_unique<image_transport::ImageTransport>(nh_);
+    left_img_subscriber_.subscribe(
+        *it_, "left_cam/image_raw", kMaxImagesQueueSize);
+    right_img_subscriber_.subscribe(
+        *it_, "right_cam/image_raw", kMaxImagesQueueSize);
+    sync_img_ = VIO::make_unique<message_filters::Synchronizer<sync_pol_img>>(
+        sync_pol_img(kMaxImageSynchronizerQueueSize),
+        left_img_subscriber_,
+        right_img_subscriber_);
 
-  DCHECK(sync_img_);
-  sync_img_->registerCallback(
-      boost::bind(&RosOnlineDataProvider::callbackStereoImages, this, _1, _2));
+    DCHECK(sync_img_);
+    sync_img_->registerCallback(
+        boost::bind(&RosOnlineDataProvider::callbackStereoImages, this, _1, _2));
+  } else {
+    left_cimg_subscriber_ = VIO::make_unique<message_filters::Subscriber<sensor_msgs::CompressedImage>>(
+        nh_, "left_cam/image_raw", kMaxImagesQueueSize);
+    right_cimg_subscriber_ = VIO::make_unique<message_filters::Subscriber<sensor_msgs::CompressedImage>>(
+        nh_, "right_cam/image_raw", kMaxImagesQueueSize);
+    sync_cimg_ = VIO::make_unique<message_filters::Synchronizer<sync_pol_cimg>>(
+        sync_pol_cimg(kMaxImageSynchronizerQueueSize),
+        *left_cimg_subscriber_,
+        *right_cimg_subscriber_);
+
+    DCHECK(sync_cimg_);
+    sync_cimg_->registerCallback(
+        boost::bind(&RosOnlineDataProvider::callbackStereoCompressedImages, this, _1, _2));
+  }
+
+  
 
   // Define Reinitializer Subscriber
   static constexpr size_t kMaxReinitQueueSize = 1u;
@@ -297,6 +318,34 @@ void RosOnlineDataProvider::callbackStereoImages(
                                                   timestamp_right,
                                                   right_cam_info,
                                                   readRosImage(right_msg)));
+    frame_count_++;
+  }
+}
+
+void RosOnlineDataProvider::callbackStereoCompressedImages(
+    const sensor_msgs::CompressedImageConstPtr& left_msg,
+    const sensor_msgs::CompressedImageConstPtr& right_msg) {
+  CHECK_GE(vio_params_.camera_params_.size(), 2u);
+  const CameraParams& left_cam_info = vio_params_.camera_params_.at(0);
+  const CameraParams& right_cam_info = vio_params_.camera_params_.at(1);
+
+  CHECK(left_msg);
+  CHECK(right_msg);
+  const Timestamp& timestamp_left = left_msg->header.stamp.toNSec();
+  const Timestamp& timestamp_right = right_msg->header.stamp.toNSec();
+
+  CHECK(left_frame_callback_)
+      << "Did you forget to register the left frame callback?";
+  CHECK(right_frame_callback_)
+      << "Did you forget to register the right frame callback?";
+
+  if (!shutdown_) {
+    left_frame_callback_(VIO::make_unique<Frame>(
+        frame_count_, timestamp_left, left_cam_info, readRosCompressedImage(left_msg)));
+    right_frame_callback_(VIO::make_unique<Frame>(frame_count_,
+                                                  timestamp_right,
+                                                  right_cam_info,
+                                                  readRosCompressedImage(right_msg)));
     frame_count_++;
   }
 }

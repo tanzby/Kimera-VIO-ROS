@@ -11,16 +11,6 @@
     uri: https://github.com/ToniRV/kimera_rviz_markers.git
     version: master
 - git:
-    local-name: gtsam
-    uri: https://github.com/borglab/gtsam.git
-    version: master
-    # Last tested commit: 342f30d148fae84c92ff71705c9e50e0a3683bda
-- git:
-    local-name: opencv3_catkin
-    uri: https://github.com/ethz-asl/opencv3_catkin.git
-    version: master
-    # Last tested commit: 880da1510aa80a247b80adca32ac2941ddfa94ff
-- git:
     local-name: opengv_catkin
     uri: https://github.com/ToniRV/opengv_catkin.git
     version: master

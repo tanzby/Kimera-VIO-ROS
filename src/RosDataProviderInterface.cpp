@@ -75,6 +75,19 @@ const cv::Mat RosDataProviderInterface::readRosImage(
   }
 }
 
+const cv::Mat RosDataProviderInterface::readRosCompressedImage (
+    const sensor_msgs::CompressedImageConstPtr& img_msg) const {
+  CHECK(img_msg);
+  cv::Mat img;
+  try {
+    img = cv::imdecode(img_msg->data, cv::IMREAD_GRAYSCALE);
+  } catch (cv::Exception& exception) {
+    ROS_FATAL("imdecode exception: %s", exception.what());
+    ros::shutdown();
+  }
+  return img;
+}
+
 const cv::Mat RosDataProviderInterface::readRosDepthImage(
     const sensor_msgs::ImageConstPtr& img_msg) const {
   cv_bridge::CvImagePtr cv_ptr;

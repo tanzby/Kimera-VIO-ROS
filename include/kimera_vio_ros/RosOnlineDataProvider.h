@@ -14,6 +14,7 @@
 #include <ros/callback_queue.h>
 #include <sensor_msgs/CameraInfo.h>
 #include <sensor_msgs/Imu.h>
+#include <sensor_msgs/CompressedImage.h>
 #include <std_msgs/Bool.h>
 
 #include "kimera_vio_ros/RosDataProviderInterface.h"
@@ -75,6 +76,9 @@ class RosOnlineDataProvider : public RosDataProviderInterface {
   // Stereo image callback
   void callbackStereoImages(const sensor_msgs::ImageConstPtr& left_msg,
                             const sensor_msgs::ImageConstPtr& right_msg);
+  
+  void callbackStereoCompressedImages(const sensor_msgs::CompressedImageConstPtr& left_msg,
+                                      const sensor_msgs::CompressedImageConstPtr& right_msg);
 
   // CameraInfo callback
   void callbackCameraInfo(const sensor_msgs::CameraInfoConstPtr& left_msg,
@@ -105,6 +109,8 @@ class RosOnlineDataProvider : public RosDataProviderInterface {
   typedef image_transport::SubscriberFilter ImageSubscriber;
   ImageSubscriber left_img_subscriber_;
   ImageSubscriber right_img_subscriber_;
+  std::unique_ptr<message_filters::Subscriber<sensor_msgs::CompressedImage>> left_cimg_subscriber_;
+  std::unique_ptr<message_filters::Subscriber<sensor_msgs::CompressedImage>> right_cimg_subscriber_;
 
   // Define CameraInfo message subscribers
   typedef message_filters::Subscriber<sensor_msgs::CameraInfo>
@@ -117,10 +123,14 @@ class RosOnlineDataProvider : public RosDataProviderInterface {
   typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image,
                                                           sensor_msgs::Image>
       sync_pol_img;
+  typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::CompressedImage,
+                                                          sensor_msgs::CompressedImage>
+      sync_pol_cimg;
   typedef message_filters::sync_policies::
       ApproximateTime<sensor_msgs::CameraInfo, sensor_msgs::CameraInfo>
           sync_pol_info;
   std::unique_ptr<message_filters::Synchronizer<sync_pol_img>> sync_img_;
+  std::unique_ptr<message_filters::Synchronizer<sync_pol_cimg>> sync_cimg_;
   std::unique_ptr<message_filters::Synchronizer<sync_pol_info>> sync_cam_info_;
 
   // Define subscriber for IMU data
@@ -136,6 +146,7 @@ class RosOnlineDataProvider : public RosDataProviderInterface {
   // Ground-truth initialization pose received flag
   bool gt_init_pose_received_ = false;
   bool camera_info_received_ = false;
+  bool is_compress_image_ = false;
 
   // Have the async spinners start?
   bool started_async_spinners_ = false;
