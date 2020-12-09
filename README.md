@@ -1,6 +1,6 @@
 # Kimera-VIO-ROS
 
-ROS Wrapper for [Kimera](https://github.com/MIT-SPARK/Kimera).
+ROS Wrapper for [Kimera](https://github.com/MIT-SPARK/Kimera) Fork from [Kimera](https://github.com/MIT-SPARK/Kimera-VIO-ROS).
 
 <div align="center">
     <img src="docs/media/Kimera-VIO-ROS_mesh.gif">
@@ -11,7 +11,7 @@ ROS Wrapper for [Kimera](https://github.com/MIT-SPARK/Kimera).
 We kindly ask to cite our paper if you find this library useful:
 
 - A. Rosinol, M. Abate, Y. Chang, L. Carlone, [**Kimera: an Open-Source Library for Real-Time Metric-Semantic Localization and Mapping**](https://arxiv.org/abs/1910.02490). IEEE Intl. Conf. on Robotics and Automation (ICRA), 2020. [arXiv:1910.02490](https://arxiv.org/abs/1910.02490).
- 
+
  ```bibtex
  @InProceedings{Rosinol20icra-Kimera,
    title = {Kimera: an Open-Source Library for Real-Time Metric-Semantic Localization and Mapping},
@@ -21,7 +21,7 @@ We kindly ask to cite our paper if you find this library useful:
    url = {https://github.com/MIT-SPARK/Kimera},
    pdf = {https://arxiv.org/pdf/1910.02490.pdf}
  }
-```
+ ```
 
 # 1. Installation
 
@@ -59,20 +59,17 @@ Install [Intel Threaded Building Blocks (TBB)](http://www.threadingbuildingblock
 mkdir -p ~/catkin_ws/src
 cd ~/catkin_ws/
 catkin init
-catkin config --cmake-args -DCMAKE_BUILD_TYPE=Release
+catkin config --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17
 # On Ubuntu 16.04:
 # catkin config --cmake-args -DCMAKE_BUILD_TYPE=Release -DGTSAM_USE_SYSTEM_EIGEN=ON
 catkin config --merge-devel
 
-# Add workspace to bashrc for automatic sourcing of workspace.
-echo 'source ~/catkin_ws/devel/setup.bash' >> ~/.bashrc
-
 # Clone repo
 cd ~/catkin_ws/src
-# For ssh:
-git clone git@github.com:MIT-SPARK/Kimera-VIO-ROS.git
 # For https:
-# git clone https://github.com/MIT-SPARK/Kimera-VIO-ROS.git
+git clone https://github.com/tanzby/Kimera-VIO-ROS.git
+# For ssh:
+# git clone git@github.com:tanzby/Kimera-VIO-ROS.git
 
 # Install dependencies from rosinstall file using wstool
 wstool init # Use unless wstool is already initialized

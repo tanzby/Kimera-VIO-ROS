@@ -32,11 +32,11 @@
     version: master
 - git:
     local-name: Kimera-VIO
-    uri: git@github.com:MIT-SPARK/Kimera-VIO.git
+    uri: git@github.com:tanzby/Kimera-VIO.git
     version: master
 - git:
     local-name: Kimera-VIO-ROS
-    uri: git@github.com:MIT-SPARK/Kimera-VIO-ROS.git
+    uri: git@github.com:tanzby/Kimera-VIO-ROS.git
     version: master
 - git:
     local-name: glog_catkin
@@ -52,6 +52,6 @@
     version: master
 - git:
     local-name: image_undistort
-    uri: git@github.com:ethz-asl/image_undistort.git
+    uri: git@github.com:tanzby/image_undistort.git
     version: master
 
