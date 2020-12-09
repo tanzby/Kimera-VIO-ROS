@@ -27,6 +27,8 @@
   <!-- If true, SparkVio will enable the LoopClosureDetector module. -->
   <arg name="use_lcd" default="false"/>
 
+  <arg name="is_compress_image" default="false"/>
+
   <!-- Parameters -->
   <!-- each dataset has its own set of parameter files -->
   <!-- the parameters are set in param folder, ordered by the dataset's name -->
@@ -81,12 +83,13 @@
               --log_euroc_gt_data=$(arg log_output)
               --output_path=$(arg log_output_path)
               --viz_type=$(arg viz_type)
-              --visualize=$(arg visualize)" launch-prefix="gdb -ex run --args">
+              --visualize=$(arg visualize)">
     <param name="params_folder_path"    value="$(arg params_folder)"/>
 
     <param name="online_run"            value="$(arg online)"/>
     <param name="use_lcd"               value="$(arg use_lcd)"/>
     <param name="use_online_cam_params" value="$(arg use_online_cam_params)"/>
+    <param name="is_compress_image"     value="$(arg is_compress_image)"/>
 
     <!-- Frame IDs for Odometry -->
     <param name="world_frame_id"     value="$(arg world_frame_id)"/>

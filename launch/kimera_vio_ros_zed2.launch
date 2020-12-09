@@ -9,7 +9,7 @@
   <arg name="log_gt_data" default="false"/>
   <arg name="gt_topic" default=""/>
   <!-- Set use_sim_time to true if you use rosbag with clock argument -->
-  <arg name="should_use_sim_time" default="false"/>
+  <arg name="should_use_sim_time" default="true"/>
 
   <!-- Only used when parsing a rosbag -->
   <arg name="rosbag_path" default="default.bag"
@@ -28,10 +28,11 @@
   <arg name="right_cam_topic"      value="/zed2_node/right/image_rect_color/compressed"/>
   <arg name="left_cam_info_topic"  value="/zed2_node/left/camera_info"/>
   <arg name="right_cam_info_topic" value="/zed2_node/right/camera_info"/>
-  <arg name="imu_topic"            value="/camera/imu"/>
+  <arg name="imu_topic"            value="/zed2_node/imu/data"/>
 
-  <arg name="use_lcd"              value="true"/>
+  <arg name="use_lcd"              value="false"/>
   <arg name="is_compress_image"    value="true"/>
+  <arg name="use_online_cam_params" value="false"/>
 
   <!-- Launch actual pipeline -->
   <include file="$(find kimera_vio_ros)/launch/kimera_vio_ros.launch"
