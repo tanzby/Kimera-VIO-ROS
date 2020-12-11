@@ -1,6 +1,6 @@
 <launch>
   <arg name="dataset_name" value="ZED2"/>
-  <arg name="online" default="True" />
+  <arg name="online" default="true" />
 
   <arg name="log_output" default="false"/>
   <arg name="log_output_path"
@@ -10,10 +10,6 @@
   <arg name="gt_topic" default=""/>
   <!-- Set use_sim_time to true if you use rosbag with clock argument -->
   <arg name="should_use_sim_time" default="true"/>
-
-  <!-- Only used when parsing a rosbag -->
-  <arg name="rosbag_path" default="default.bag"
-       unless="$(arg online)"/>"/>
 
   <!-- Frame IDs. These DO NOT match frame id's on the video streams, as the 
 	RealSense and Kimera publish conflicting Tf's -->
